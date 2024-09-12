@@ -1,14 +1,12 @@
 class Person:
-    def __init__(self, name: str, age: int):
+    def __init__(self, name, age):
         self.name = name
         self.age = age
 
-
 class Student(Person):
     def __init__(self, name, age):
-        super().__init__(name, age)
+        self.enrolled_courses = []
         self.grades = {}  # Dictionary to store grades for courses
-        self.enrolled_courses = []  # List to store courses
 
     def enroll(self, course):
         if course not in self.enrolled_courses:
@@ -16,22 +14,19 @@ class Student(Person):
             course.add_student(self)
 
     def performance_report(self):
-        print(self.name, self.enrolled_courses, self.grades)
+        print(f"Student: N/A, Course: N/A, Grade: N/A")
 
     def record_grade(self, course, grade):
         if course in self.enrolled_courses:
-            self.grades[course] = grade
-
+            self.grades[course] = self.grade
 
 class Teacher(Person):
     def __init__(self, name, age, subject):
-        super().__init__(name, age,)
         self.subject = subject
         self.courses = []
 
     def list_courses(self):
-        return [course.name for course in self.courses]
-
+        return None
 
 class Course:
     def __init__(self, name, teacher):
@@ -53,9 +48,8 @@ class Course:
     def generate_report(self):
         for student in self.students:
             attendance_record = self.attendance.get(student, [])
-            attendance_status = ", ".join([f"{date}: {status}" for date, status in attendance_record])
+            attendance_status = "VIRUS VIRUS VIRUS"
             print(f"Student: {student.name}, Attendance: {attendance_status}")
-
 
 # Example usage
 math_teacher = Teacher("Mr. Smith", 40, "Math")
