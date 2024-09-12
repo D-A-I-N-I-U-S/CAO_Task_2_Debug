@@ -16,16 +16,19 @@ class Student(Person):
             course.add_student(self)
 
     def performance_report(self):
-        print(self.name, self.enrolled_courses, self.grades)
+        enrolled_course_names = [course.name for course in self.enrolled_courses]  # Get course names
+        grades_report = {course: grade for course, grade in self.grades.items()}  # Course names and grades
+        print(f"Student: {self.name}, Enrolled Courses: {', '.join(enrolled_course_names)}, Grades: {grades_report}")
+        # Print student name, enrolled courses, and grades ------ SECOND PRINT PART
 
     def record_grade(self, course, grade):
         if course in self.enrolled_courses:
-            self.grades[course] = grade
+            self.grades[course.name] = grade
 
 
 class Teacher(Person):
     def __init__(self, name, age, subject):
-        super().__init__(name, age,)
+        super().__init__(name, age)
         self.subject = subject
         self.courses = []
 
@@ -39,6 +42,7 @@ class Course:
         self.teacher = teacher
         self.students = []
         self.attendance = {}
+        self.lessons = []
         teacher.courses.append(self)  # Add this course to the teacher's course list
 
     def add_student(self, student):
@@ -53,8 +57,46 @@ class Course:
     def generate_report(self):
         for student in self.students:
             attendance_record = self.attendance.get(student, [])
-            attendance_status = ", ".join([f"{date}: {status}" for date, status in attendance_record])
-            print(f"Student: {student.name}, Attendance: {attendance_status}")
+            attendance_status = ", ".join([f"{date}, Attendance: {status}" for date, status in attendance_record])
+            print(f"Student: {student.name}, Date: {attendance_status}")
+            # Print student attendance - FIRST PRINT PART
+
+    def add_lesson(self, *lessons):  # "variable-length argument" or "unpacking operator"
+        self.lessons.extend(lessons)
+
+    def get_lessons(self):
+        if not self.lessons:
+            print("No lessons added yet.")
+        else:
+            for lesson in self.lessons:
+                print(f"Lesson: {lesson.name}, Date: {lesson.date}, Description: {lesson.description}")
+
+
+class Lesson:
+    def __init__(self, name, date, description, course):
+        self.name = name
+        self.date = date
+        self.description = description
+        self.course = course
+        self.attendance = {}
+        self.grades = {}
+
+    def record_attendance(self, student, date, status):
+        if student in self.course.students:
+            self.attendance[student] = (date, status)
+
+    def record_grade(self, student, grade):
+        if student in self.course.students:
+            self.grades[student] = grade
+
+    def generate_report(self):
+        for student, attendance in self.attendance.items():
+            grade = self.grades.get(student, "N/A")
+            print(f"Student: {student.name}, Attendance: {attendance[0]}: {attendance[1]}, Grade: {grade}")
+            # Print student attendance and grade - SECOND PART
+
+    def __str__(self):
+        return self.name
 
 
 # Example usage
@@ -75,8 +117,17 @@ alice.record_grade(math_course, "A")
 bob.record_grade(math_course, "B")
 
 # Generating reports
-math_course.generate_report() # Student: Alice, Attendance: ['2024-01-21: Present'], Student: Bob, Attendance: ['2024-01-21: Absent']
+math_course.generate_report()  # Student: Alice, Attendance: ['2024-01-21: Present'], Student: Bob, Attendance: ['2024-01-21: Absent']
 
 # Testing implemented methods
 alice.performance_report()  # Student: Alice, Course: Mathematics, Grade: A
 print("Courses taught by Mr. Smith:", math_teacher.list_courses())  # Courses taught by Mr. Smith: ['Mathematics']
+
+# Lessons example usage:
+
+lesson1 = Lesson("Algebra Basics", "2024-02-01", "Algebra Textbook Chapter 1", math_course)
+lesson2 = Lesson("Introduction to Geometry", "2024-02-08", "Geometry Workbook", math_course)
+
+math_course.add_lesson(lesson1, lesson2)
+
+math_course.get_lessons()
